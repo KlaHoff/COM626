@@ -10,10 +10,7 @@ import androidx.room.Update
 interface PoiDao {
 
     @Insert
-    fun createPoi(poi: Poi)
-
-    @Query("SELECT * FROM poi")
-    fun getAllPois(): List<Poi>
+    fun createPoi(poi: List<Poi>)
 
     @Update
     fun updatePoi(poi: Poi)
@@ -21,4 +18,12 @@ interface PoiDao {
     @Delete
     fun deletePoi(poi: Poi)
 
+    @Query("SELECT * FROM poi")
+    fun getAllPois(): List<Poi>
+
+    @Query("DELETE FROM poi")
+    fun deleteAllPois()
+
+    @Query("SELECT * FROM poi WHERE osmId = :osmId")
+    suspend fun getPoiByOsmId(osmId: Long): Poi?
 }

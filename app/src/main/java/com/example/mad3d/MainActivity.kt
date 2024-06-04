@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
+import com.example.mad3d.data.POIRepository
 import com.example.mad3d.data.PoiDao
 import com.example.mad3d.data.PoiDatabase
 import com.example.mad3d.databinding.ActivityMainBinding
@@ -47,16 +48,28 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.download_POIs -> {
+            downloadPOIs()
             true
         }
 
         R.id.delete_POIs -> {
+            Thread {
+                poiDao.deleteAllPois()
+            }.start()
+            Toast.makeText(this, "All POIs deleted", Toast.LENGTH_SHORT).show()
             true
         }
 
         else -> {
             super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun downloadPOIs() {
+        val bbox = "-1.424401,50.896821,-1.404401,50.916821"
+        val poiRepository = POIRepository(this)
+        poiRepository.fetchAndStorePOIs(bbox)
+        Toast.makeText(this, "Downloading POIs...", Toast.LENGTH_SHORT).show()
     }
 
     private fun onMapClicked(): Boolean {
