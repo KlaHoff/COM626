@@ -1,4 +1,4 @@
-package com.example.mad3d
+package com.example.mad3d.ui
 
 import android.os.Bundle
 import android.view.Menu
@@ -6,13 +6,14 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
+import com.example.mad3d.R
 import com.example.mad3d.data.POIRepository
 import com.example.mad3d.data.PoiDao
 import com.example.mad3d.data.PoiDatabase
 import com.example.mad3d.databinding.ActivityMainBinding
 import com.example.mad3d.databinding.DialogFilterPoiBinding
+import com.example.mad3d.ui.explore.ExploreFragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 
 class MainActivity : AppCompatActivity(), OnItemSelectedListener {
