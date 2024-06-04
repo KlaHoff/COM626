@@ -6,14 +6,19 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
+import com.example.mad3d.data.PoiDao
+import com.example.mad3d.data.PoiDatabase
 import com.example.mad3d.databinding.ActivityMainBinding
 import com.example.mad3d.databinding.DialogFilterPoiBinding
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 
 class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var database: PoiDatabase
+    private val poiDao: PoiDao by lazy { database.getPoiDao() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,22 +28,16 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
         binding.bottomNav.setOnItemSelectedListener(this)
         binding.fab.setOnClickListener { showFilterPOIDialog() }
+
+        database = PoiDatabase.createDatabase(this)
+
     }
 
     private fun showFilterPOIDialog() {
         val dialogBinding = DialogFilterPoiBinding.inflate(layoutInflater)
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Write something")
-            .setView(dialogBinding.root)
-            .setPositiveButton("Save") { _, _ ->
-                Toast.makeText(
-                    this,
-                    "The text is: ${dialogBinding.editText.text}",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        val dialog = BottomSheetDialog(this)
+        dialog.setContentView(dialogBinding.root)
+        dialog.show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
