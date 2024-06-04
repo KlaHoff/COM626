@@ -5,4 +5,5 @@
     <string name="title_ar_view">AR view</string>
     <string name="download_pois">Download POIs</string>
     <string name="delete_pois">Delete POIs</string>
+    <string name="filtering_button_alt_description">Filtering button</string>
 </resources>

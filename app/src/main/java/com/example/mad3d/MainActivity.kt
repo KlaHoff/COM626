@@ -3,9 +3,12 @@ package com.example.mad3d
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import com.example.mad3d.databinding.ActivityMainBinding
+import com.example.mad3d.databinding.DialogFilterPoiBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 
 class MainActivity : AppCompatActivity(), OnItemSelectedListener {
@@ -19,6 +22,23 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         setContentView(binding.root)
 
         binding.bottomNav.setOnItemSelectedListener(this)
+        binding.fab.setOnClickListener { showFilterPOIDialog() }
+    }
+
+    private fun showFilterPOIDialog() {
+        val dialogBinding = DialogFilterPoiBinding.inflate(layoutInflater)
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Write something")
+            .setView(dialogBinding.root)
+            .setPositiveButton("Save") { _, _ ->
+                Toast.makeText(
+                    this,
+                    "The text is: ${dialogBinding.editText.text}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
