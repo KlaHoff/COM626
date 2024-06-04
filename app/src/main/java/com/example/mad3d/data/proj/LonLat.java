@@ -1,3 +1,4 @@
+package com.example.mad3d.data.proj;
 
 public class LonLat {
     public double lon,lat;

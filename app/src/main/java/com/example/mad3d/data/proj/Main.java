@@ -1,3 +1,5 @@
+package com.example.mad3d.data.proj;
+
 public class Main {
     //Uncomment to test
     /*

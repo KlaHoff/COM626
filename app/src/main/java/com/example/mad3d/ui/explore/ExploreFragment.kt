@@ -18,6 +18,7 @@ class ExploreFragment : Fragment() {
     private val poiDao: PoiDao by lazy {
         PoiDatabase.createDatabase(requireContext()).getPoiDao()
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

@@ -18,7 +18,8 @@ class PoisAdapter(private val pois: List<Poi>) : RecyclerView.Adapter<PoisAdapte
         holder.bind(pois[position])
     }
 
-    inner class ViewHolder(private val binding: ItemPoiBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: ItemPoiBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(poi: Poi) {
             binding.textViewName.text = poi.name

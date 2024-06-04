@@ -1,3 +1,5 @@
+package com.example.mad3d.data.proj;
+
 public class Algorithms {
    public static double haversineDist(double lon1, double lat1, double lon2, double lat2)
 

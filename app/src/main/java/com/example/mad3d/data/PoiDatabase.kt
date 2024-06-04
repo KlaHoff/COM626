@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Poi::class], version = 1)
+@Database(entities = [Poi::class], version = 2)
 abstract class PoiDatabase : RoomDatabase() {
     abstract fun getPoiDao(): PoiDao
 

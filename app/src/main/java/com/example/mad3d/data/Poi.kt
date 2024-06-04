@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class Poi (
-    @PrimaryKey(autoGenerate = true) val osmId: Long,
+data class Poi(
+    @PrimaryKey val osmId: Long,
     val name: String?,
     val place: String?,
     val featureType: String?,
