@@ -7,11 +7,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.mad3d.R
 import com.example.mad3d.data.Poi
+import com.example.mad3d.data.PoiDao
+import com.example.mad3d.data.PoiDatabase
 import com.example.mad3d.databinding.FragmentExploreBinding
+import kotlin.concurrent.thread
 
 class ExploreFragment : Fragment() {
 
     private lateinit var binding: FragmentExploreBinding
+    private val poiDao: PoiDao by lazy {
+        PoiDatabase.createDatabase(requireContext()).getPoiDao()
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -23,14 +29,11 @@ class ExploreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.recyclerView.adapter = PoisAdapter(
-            //dummy text just for trying it out
-            pois = listOf(
-                Poi(name = "First POI", place = "Some poi place", featureType = "Some feature type", lat = 1.0, lon = 1.0, x = 1.0, y = 1.0, osmId = 2222222),
-                Poi(name = "Another POI", place = "Some poi place", featureType = "Pub", lat = 1.0, lon = 1.0, x = 1.0, y = 1.0, osmId = 223),
-                Poi(name = "And another one", place = "Some poi place", featureType = "Restaurant", lat = 1.0, lon = 1.0, x = 1.0, y = 1.0, osmId = 3231)
-            )
-        )
+        thread {
+            val pois = poiDao.getAllPois()
+            requireActivity().runOnUiThread {
+                binding.recyclerView.adapter = PoisAdapter(pois = pois)
+            }
+        }
     }
-
 }
