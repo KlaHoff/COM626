@@ -3,4 +3,6 @@
     <string name="title_map_view">Map</string>
     <string name="title_explore_pois">Explore POIs</string>
     <string name="title_ar_view">AR view</string>
+    <string name="download_pois">Download POIs</string>
+    <string name="delete_pois">Delete POIs</string>
 </resources>
