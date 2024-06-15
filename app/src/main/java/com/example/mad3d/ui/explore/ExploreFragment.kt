@@ -5,8 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.mad3d.R
-import com.example.mad3d.data.Poi
 import com.example.mad3d.data.PoiDao
 import com.example.mad3d.data.PoiDatabase
 import com.example.mad3d.databinding.FragmentExploreBinding

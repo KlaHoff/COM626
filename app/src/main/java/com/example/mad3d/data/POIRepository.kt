@@ -1,7 +1,7 @@
 package com.example.mad3d.data
 
-import LonLat
-import SphericalMercatorProjection
+import com.example.mad3d.data.proj.LonLat
+import com.example.mad3d.data.proj.SphericalMercatorProjection
 import android.content.Context
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
