@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
+import androidx.lifecycle.Observer
 import com.example.mad3d.R
-import com.example.mad3d.data.POIRepository
-import com.example.mad3d.data.PoiDao
-import com.example.mad3d.data.PoiDatabase
+import com.example.mad3d.data.PoiRepository
 import com.example.mad3d.databinding.ActivityMainBinding
 import com.example.mad3d.databinding.DialogFilterPoiBinding
 import com.example.mad3d.ui.explore.ExploreFragment
@@ -19,8 +19,9 @@ import com.google.android.material.navigation.NavigationBarView.OnItemSelectedLi
 class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var database: PoiDatabase
-    private val poiDao: PoiDao by lazy { database.getPoiDao() }
+    private val poiViewModel: PoiViewModel by viewModels {
+        PoiViewModelFactory(PoiRepository(this))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +32,9 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         binding.bottomNav.setOnItemSelectedListener(this)
         binding.fab.setOnClickListener { showFilterPOIDialog() }
 
-        database = PoiDatabase.createDatabase(this)
+       poiViewModel.pois.observe(this, Observer { pois ->
+           //Do something with the POIs
+       })
 
     }
 
@@ -49,14 +52,14 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.download_POIs -> {
-            downloadPOIs()
+            val bbox = "-1.424401,50.896821,-1.404401,50.916821"
+            poiViewModel.fetchAndStorePois(bbox)
+            Toast.makeText(this, "Downloading POIs...", Toast.LENGTH_SHORT).show()
             true
         }
 
         R.id.delete_POIs -> {
-            Thread {
-                poiDao.deleteAllPois()
-            }.start()
+            poiViewModel.deleteAllPois()
             Toast.makeText(this, "All POIs deleted", Toast.LENGTH_SHORT).show()
             true
         }
@@ -64,13 +67,6 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         else -> {
             super.onOptionsItemSelected(item)
         }
-    }
-
-    private fun downloadPOIs() {
-        val bbox = "-1.424401,50.896821,-1.404401,50.916821"
-        val poiRepository = POIRepository(this)
-        poiRepository.fetchAndStorePOIs(bbox)
-        Toast.makeText(this, "Downloading POIs...", Toast.LENGTH_SHORT).show()
     }
 
     private fun onMapClicked(): Boolean {
