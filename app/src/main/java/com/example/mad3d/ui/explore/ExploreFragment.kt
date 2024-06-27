@@ -29,14 +29,11 @@ class ExploreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set an empty adapter initially
         binding.recyclerView.adapter = PoisAdapter(emptyList())
 
-        // Load data in a background thread
         thread {
             val pois = poiDao.getAllPois()
             requireActivity().runOnUiThread {
-                // Update the adapter with actual data
                 (binding.recyclerView.adapter as PoisAdapter).updateData(pois)
             }
         }

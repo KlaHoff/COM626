@@ -83,14 +83,26 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
     }
 
     private fun requestPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                0
+            )
         } else {
             initService()
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 0 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             initService()
@@ -136,10 +148,15 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
     }
 
     private fun downloadPOIs() {
-        val bbox = "-1.424401,50.896821,-1.404401,50.916821"
-        val poiRepository = POIRepository(this)
-        poiRepository.fetchAndStorePOIs(bbox)
-        Toast.makeText(this, "Downloading POIs...", Toast.LENGTH_SHORT).show()
+        locationViewModel.latLon.value?.let { location ->
+            val bbox =
+                "${location.lon - 0.01},${location.lat - 0.01},${location.lon + 0.01},${location.lat + 0.01}"
+            val poiRepository = POIRepository(this)
+            poiRepository.fetchAndStorePOIs(bbox)
+            Toast.makeText(this, "Downloading POIs...", Toast.LENGTH_SHORT).show()
+        } ?: run {
+            Toast.makeText(this, "Location not available", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun onMapClicked(): Boolean {
