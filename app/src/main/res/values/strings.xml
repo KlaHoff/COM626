@@ -7,4 +7,7 @@
     <string name="delete_pois">Delete POIs</string>
     <string name="filtering_button_alt_description">Filtering button</string>
     <string name="poi_icon">POI icon</string>
+    <string name="startGps">start Gps</string>
+    <string name="getGps">get Gps</string>
+    <string name="stopGps">stop Gps</string>
 </resources>
