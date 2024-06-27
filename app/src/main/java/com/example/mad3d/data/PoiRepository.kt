@@ -3,18 +3,15 @@ package com.example.mad3d.data
 import com.example.mad3d.data.proj.LonLat
 import com.example.mad3d.data.proj.SphericalMercatorProjection
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class PoiRepository(private val context: Context) {
+class POIRepository(private val context: Context) {
     private val poiService: PoiService
     private val poiDao: PoiDao
-    private val _pois = MutableLiveData<List<Poi>>()
 
     init {
         val retrofit = Retrofit.Builder()
@@ -26,7 +23,7 @@ class PoiRepository(private val context: Context) {
         poiDao = PoiDatabase.createDatabase(context).getPoiDao()
     }
 
-    fun fetchAndStorePois(bbox: String) {
+    fun fetchAndStorePOIs(bbox: String) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = poiService.getPois(bbox, "poi", "4326").execute()
             if (response.isSuccessful) {
@@ -60,20 +57,9 @@ class PoiRepository(private val context: Context) {
                     // Insert only the POIs that are not already in the database
                     if (poisToInsert.isNotEmpty()) {
                         poiDao.createPoi(poisToInsert)
-                        _pois.postValue(poiDao.getAllPois())
                     }
                 }
             }
-        }
-    }
-
-    suspend fun getAllPois(): List<Poi> {
-        return poiDao.getAllPois()
-    }
-
-    fun deleteAllPOIs() {
-        CoroutineScope(Dispatchers.IO).launch {
-            poiDao.deleteAllPois()
         }
     }
 }
