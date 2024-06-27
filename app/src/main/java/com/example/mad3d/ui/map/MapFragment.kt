@@ -1,5 +1,6 @@
 package com.example.mad3d.ui.map
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
@@ -21,6 +22,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.compass.CompassOverlay
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import kotlin.math.abs
 
 class MapFragment : Fragment() {
 
@@ -28,7 +30,10 @@ class MapFragment : Fragment() {
     private lateinit var mapView: MapView
     private lateinit var myLocationOverlay: MyLocationNewOverlay
     private lateinit var poiDatabase: PoiDatabase
+    private var lastLat: Double? = null
+    private var lastLon: Double? = null
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,11 +58,21 @@ class MapFragment : Fragment() {
         locationViewModel = ViewModelProvider(requireActivity()).get(LocationViewModel::class.java)
 
         locationViewModel.latLon.observe(viewLifecycleOwner, Observer { latLon ->
-            updateMapView(latLon.lat, latLon.lon)
+            val lat = latLon.lat
+            val lon = latLon.lon
+            if (shouldUpdateMap(lat, lon)) {
+                updateMapView(lat, lon)
+            }
         })
 
         poiDatabase = PoiDatabase.getDatabase(requireContext())
         fetchAndDisplayPois()
+
+        mapView.setOnTouchListener { v, event ->
+            myLocationOverlay.disableFollowLocation()
+            v.performClick()
+            false
+        }
 
         return view
     }
@@ -75,6 +90,25 @@ class MapFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         mapView.onDetach()
+    }
+
+    private fun shouldUpdateMap(lat: Double, lon: Double): Boolean {
+        val threshold = 0.0001 // threshold for significant location change
+        return if (lastLat == null || lastLon == null) {
+            lastLat = lat
+            lastLon = lon
+            true
+        } else {
+            val latChanged = abs(lat - lastLat!!) > threshold
+            val lonChanged = abs(lon - lastLon!!) > threshold
+            if (latChanged || lonChanged) {
+                lastLat = lat
+                lastLon = lon
+                true
+            } else {
+                false
+            }
+        }
     }
 
     private fun updateMapView(latitude: Double, longitude: Double) {
