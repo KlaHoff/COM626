@@ -54,15 +54,17 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         binding.bottomNav.setOnItemSelectedListener(this)
         binding.fab.setOnClickListener { showFilterPOIDialog() }
 
-        database = PoiDatabase.createDatabase(this)
+        database = PoiDatabase.getDatabase(this)
 
         locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
 
+        /*
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 replace(R.id.frame_content, MapFragment())
             }
         }
+        */
         requestPermissions()
     }
 

@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mad3d.data.Poi
 import com.example.mad3d.databinding.ItemPoiBinding
 
-class PoisAdapter(private val pois: List<Poi>) : RecyclerView.Adapter<PoisAdapter.ViewHolder>() {
+class PoisAdapter(private var pois: List<Poi>) : RecyclerView.Adapter<PoisAdapter.ViewHolder>() {
 
     override fun getItemCount() = pois.size
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,5 +25,11 @@ class PoisAdapter(private val pois: List<Poi>) : RecyclerView.Adapter<PoisAdapte
             binding.textViewName.text = poi.name
             binding.textViewFeatureType.text = poi.featureType
         }
+    }
+
+    // Method to update the data in the adapter
+    fun updateData(newPois: List<Poi>) {
+        pois = newPois
+        notifyDataSetChanged()
     }
 }

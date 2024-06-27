@@ -20,7 +20,7 @@ class POIRepository(private val context: Context) {
             .build()
 
         poiService = retrofit.create(PoiService::class.java)
-        poiDao = PoiDatabase.createDatabase(context).getPoiDao()
+        poiDao = PoiDatabase.getDatabase(context).getPoiDao()
     }
 
     fun fetchAndStorePOIs(bbox: String) {

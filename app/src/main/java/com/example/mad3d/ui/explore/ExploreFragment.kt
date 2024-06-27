@@ -14,7 +14,7 @@ class ExploreFragment : Fragment() {
 
     private lateinit var binding: FragmentExploreBinding
     private val poiDao: PoiDao by lazy {
-        PoiDatabase.createDatabase(requireContext()).getPoiDao()
+        PoiDatabase.getDatabase(requireContext()).getPoiDao()
     }
 
     override fun onCreateView(
@@ -28,10 +28,16 @@ class ExploreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Set an empty adapter initially
+        binding.recyclerView.adapter = PoisAdapter(emptyList())
+
+        // Load data in a background thread
         thread {
             val pois = poiDao.getAllPois()
             requireActivity().runOnUiThread {
-                binding.recyclerView.adapter = PoisAdapter(pois = pois)
+                // Update the adapter with actual data
+                (binding.recyclerView.adapter as PoisAdapter).updateData(pois)
             }
         }
     }
