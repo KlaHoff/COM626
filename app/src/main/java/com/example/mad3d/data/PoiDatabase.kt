@@ -15,7 +15,6 @@ abstract class PoiDatabase : RoomDatabase() {
         fun getDatabase(context: Context): PoiDatabase {
 
             //synchronized makes sure it will only run once on the thread
-
             return DATABASE_INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context,

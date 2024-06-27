@@ -49,7 +49,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.fragment:fragment-ktx:1.7.1")
     implementation(libs.play.services.location)
-    implementation("org.osmdroid:osmdroid-android:6.1.0")
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")

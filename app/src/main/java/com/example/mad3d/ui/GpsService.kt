@@ -41,24 +41,22 @@ class GpsService : Service() {
         }
     }
 
+    private var isReceiverRegistered = false
+
     override fun onBind(intent: Intent): IBinder {
         return binder
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val filter = IntentFilter().apply {
-            addAction("com.example.androidservices.START_GPS")
-            addAction("com.example.androidservices.STOP_GPS")
-        }
-        registerReceiver(gpsCommandReceiver, filter, RECEIVER_NOT_EXPORTED)
+        registerReceiver()
         startGps()
         return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(gpsCommandReceiver)
+        unregisterReceiverSafely()
         stopGps()
     }
 
@@ -66,7 +64,7 @@ class GpsService : Service() {
         fun getService(): GpsService = this@GpsService
     }
 
-    fun startGps() {
+    private fun startGps() {
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         try {
             locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener)
@@ -75,7 +73,26 @@ class GpsService : Service() {
         }
     }
 
-    fun stopGps() {
+    private fun stopGps() {
         locationManager?.removeUpdates(locationListener)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun registerReceiver() {
+        if (!isReceiverRegistered) {
+            val filter = IntentFilter().apply {
+                addAction("com.example.androidservices.START_GPS")
+                addAction("com.example.androidservices.STOP_GPS")
+            }
+            registerReceiver(gpsCommandReceiver, filter, RECEIVER_NOT_EXPORTED)
+            isReceiverRegistered = true
+        }
+    }
+
+    private fun unregisterReceiverSafely() {
+        if (isReceiverRegistered) {
+            unregisterReceiver(gpsCommandReceiver)
+            isReceiverRegistered = false
+        }
     }
 }
