@@ -10,4 +10,6 @@
     <string name="startGps">start Gps</string>
     <string name="getGps">get Gps</string>
     <string name="stopGps">stop Gps</string>
+    <string name="channel_name">POI Notifications</string>
+    <string name="channel_description">Notifications for Points of Interest (POIs) near you.</string>
 </resources>

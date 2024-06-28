@@ -1,6 +1,7 @@
 package com.example.mad3d.ui
 
 import android.Manifest
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,7 +12,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -20,15 +20,21 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
 import com.example.mad3d.R
 import com.example.mad3d.data.POIRepository
+import com.example.mad3d.data.Poi
 import com.example.mad3d.data.PoiDao
 import com.example.mad3d.data.PoiDatabase
+import com.example.mad3d.data.proj.Algorithms
 import com.example.mad3d.databinding.ActivityMainBinding
 import com.example.mad3d.databinding.DialogFilterPoiBinding
 import com.example.mad3d.ui.explore.ExploreFragment
 import com.example.mad3d.ui.map.MapFragment
+import com.example.mad3d.utils.NotificationUtils
 import com.example.mad3d.utils.ToastUtils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
@@ -36,6 +42,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
     private lateinit var database: PoiDatabase
     private val poiDao: PoiDao by lazy { database.getPoiDao() }
     private lateinit var locationViewModel: LocationViewModel
+    private val proximityThreshold = 100.0 // Distance in meters
 
     private val locationUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -43,6 +50,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
                 val latitude = intent.getDoubleExtra("latitude", 0.0)
                 val longitude = intent.getDoubleExtra("longitude", 0.0)
                 locationViewModel.updateLocation(latitude, longitude)
+                checkProximityToPois(latitude, longitude)
             }
         }
     }
@@ -60,13 +68,6 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
         locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
 
-        /*
-        if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                replace(R.id.frame_content, MapFragment())
-            }
-        }
-        */
         requestPermissions()
     }
 
@@ -96,6 +97,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
                 0
             )
         } else {
+            requestNotificationPermission()
             initService()
         }
     }
@@ -107,9 +109,19 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 0 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            requestNotificationPermission()
             initService()
         } else {
             ToastUtils.showToast(this, "GPS permission denied")
+        }
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+            }
         }
     }
 
@@ -201,11 +213,23 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         else -> false
     }
 
-    // New function to reload the current fragment
     private fun reloadCurrentFragment() {
         supportFragmentManager.findFragmentById(R.id.frame_content)?.let { fragment ->
             supportFragmentManager.commit {
                 replace(R.id.frame_content, fragment::class.java, null)
+            }
+        }
+    }
+
+    private fun checkProximityToPois(latitude: Double, longitude: Double) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val pois = poiDao.getAllPois()
+            for (poi in pois) {
+                val distance = Algorithms.haversineDist(longitude, latitude, poi.lon, poi.lat)
+                if (distance <= proximityThreshold) {
+                    NotificationUtils.sendProximityNotification(this@MainActivity, poi)
+                    break
+                }
             }
         }
     }

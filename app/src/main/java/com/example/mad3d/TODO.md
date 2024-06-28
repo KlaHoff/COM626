@@ -9,7 +9,7 @@
 
 - [x] Showing distance to each POI in the RecyclerView
 
-- [ ] Refreshing the UI when user downloads/deletes POIs to show changes
+- [x] Refreshing the UI when user downloads/deletes POIs to show changes
 
 - [ ] Notifications when user gets close to the POI
 

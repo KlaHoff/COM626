@@ -35,13 +35,10 @@ class PoisAdapter(
         }
     }
 
-    // Method to update the data in the adapter
     fun updateData(newPois: List<Poi>) {
         pois = newPois
         notifyDataSetChanged()
     }
-
-    // Method to update the current location
     fun updateLocation(lat: Double, lon: Double) {
         currentLat = lat
         currentLon = lon
