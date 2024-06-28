@@ -23,7 +23,7 @@ class POIRepository(private val context: Context) {
         poiDao = PoiDatabase.getDatabase(context).getPoiDao()
     }
 
-    fun fetchAndStorePOIs(bbox: String) {
+    fun fetchAndStorePOIs(bbox: String, callback: () -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val response = poiService.getPois(bbox, "poi", "4326").execute()
             if (response.isSuccessful) {
@@ -60,6 +60,7 @@ class POIRepository(private val context: Context) {
                     }
                 }
             }
+            callback()
         }
     }
 }

@@ -7,7 +7,7 @@
 - [ ] Choosing which POIs to show (pubs, restaurants, ...)
     - [x] Floating action button
 
-- [ ] Showing distance to each POI in the RecyclerView
+- [x] Showing distance to each POI in the RecyclerView
 
 - [ ] Refreshing the UI when user downloads/deletes POIs to show changes
 
@@ -26,3 +26,5 @@
     - [ ] Icons change based on feature type
 
 - [ ] Map markers have different colors based on feature type
+
+- [ ] Write some note in the Explore fragment if the database is empty

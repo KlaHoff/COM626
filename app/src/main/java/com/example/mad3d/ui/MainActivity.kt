@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,7 @@ import com.example.mad3d.databinding.ActivityMainBinding
 import com.example.mad3d.databinding.DialogFilterPoiBinding
 import com.example.mad3d.ui.explore.ExploreFragment
 import com.example.mad3d.ui.map.MapFragment
+import com.example.mad3d.utils.ToastUtils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 
@@ -107,7 +109,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         if (requestCode == 0 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             initService()
         } else {
-            Toast.makeText(this, "GPS permission denied", Toast.LENGTH_SHORT).show()
+            ToastUtils.showToast(this, "GPS permission denied")
         }
     }
 
@@ -138,7 +140,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
             Thread {
                 poiDao.deleteAllPois()
             }.start()
-            Toast.makeText(this, "All POIs deleted", Toast.LENGTH_SHORT).show()
+            ToastUtils.showToast(this, "All POIs deleted")
             true
         }
 
@@ -152,11 +154,21 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
             val bbox =
                 "${location.lon - 0.01},${location.lat - 0.01},${location.lon + 0.01},${location.lat + 0.01}"
             val poiRepository = POIRepository(this)
-            poiRepository.fetchAndStorePOIs(bbox)
-            Toast.makeText(this, "Downloading POIs...", Toast.LENGTH_SHORT).show()
+            showLoading(true)
+            poiRepository.fetchAndStorePOIs(bbox) {
+                runOnUiThread {
+                    showLoading(false)
+                    ToastUtils.showToast(this, "POIs downloaded")
+                }
+            }
+            ToastUtils.showToast(this, "Downloading POIs...")
         } ?: run {
-            Toast.makeText(this, "Location not available", Toast.LENGTH_SHORT).show()
+            ToastUtils.showToast(this, "Location not available")
         }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     private fun onMapClicked(): Boolean {
