@@ -140,6 +140,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
             Thread {
                 poiDao.deleteAllPois()
             }.start()
+            reloadCurrentFragment()
             ToastUtils.showToast(this, "All POIs deleted")
             true
         }
@@ -158,10 +159,11 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
             poiRepository.fetchAndStorePOIs(bbox) {
                 runOnUiThread {
                     showLoading(false)
+                    reloadCurrentFragment()  // Reload current fragment
                     ToastUtils.showToast(this, "POIs downloaded")
                 }
             }
-            ToastUtils.showToast(this, "Downloading POIs...")
+            ToastUtils.showToast(this, "Downloading POIs... please wait")
         } ?: run {
             ToastUtils.showToast(this, "Location not available")
         }
@@ -197,5 +199,14 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         R.id.nav_map -> onMapClicked()
         R.id.nav_ar -> onARClicked()
         else -> false
+    }
+
+    // New function to reload the current fragment
+    private fun reloadCurrentFragment() {
+        supportFragmentManager.findFragmentById(R.id.frame_content)?.let { fragment ->
+            supportFragmentManager.commit {
+                replace(R.id.frame_content, fragment::class.java, null)
+            }
+        }
     }
 }
