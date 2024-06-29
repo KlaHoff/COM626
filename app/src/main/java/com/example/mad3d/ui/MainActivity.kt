@@ -18,6 +18,7 @@ import com.example.mad3d.data.PoiDatabase
 import com.example.mad3d.data.proj.Algorithms
 import com.example.mad3d.databinding.ActivityMainBinding
 import com.example.mad3d.databinding.DialogFilterPoiBinding
+import com.example.mad3d.ui.ar.ARFragment
 import com.example.mad3d.ui.explore.ExploreFragment
 import com.example.mad3d.ui.map.MapFragment
 import com.example.mad3d.utils.NotificationUtils
