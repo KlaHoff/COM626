@@ -1,14 +1,12 @@
 package com.example.mad3d.ui.map
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import com.example.mad3d.R
 import com.example.mad3d.data.Poi
 import com.example.mad3d.data.PoiDatabase
@@ -33,14 +31,13 @@ class MapFragment : Fragment() {
     private var lastLat: Double? = null
     private var lastLon: Double? = null
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_map, container, false)
-        Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
+        Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(requireContext()))
 
         mapView = view.findViewById(R.id.map1)
         mapView.controller.setZoom(16.0)
@@ -55,24 +52,18 @@ class MapFragment : Fragment() {
         compassOverlay.enableCompass()
         mapView.overlays.add(compassOverlay)
 
-        locationViewModel = ViewModelProvider(requireActivity()).get(LocationViewModel::class.java)
+        locationViewModel = ViewModelProvider(requireActivity())[LocationViewModel::class.java]
 
-        locationViewModel.latLon.observe(viewLifecycleOwner, Observer { latLon ->
+        locationViewModel.latLon.observe(viewLifecycleOwner) { latLon ->
             val lat = latLon.lat
             val lon = latLon.lon
             if (shouldUpdateMap(lat, lon)) {
                 updateMapView(lat, lon)
             }
-        })
+        }
 
         poiDatabase = PoiDatabase.getDatabase(requireContext())
         fetchAndDisplayPois()
-
-        mapView.setOnTouchListener { v, event ->
-            myLocationOverlay.disableFollowLocation()
-            v.performClick()
-            false
-        }
 
         return view
     }
