@@ -13,6 +13,5 @@ class LocationViewModel : ViewModel() {
 
     fun updateLocation(lat: Double, lon: Double) {
         _latLon.value = LatLon(lat, lon)
-        Log.d("LocationViewModel", "Location updated to lat: $lat, lon: $lon")
     }
 }

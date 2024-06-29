@@ -11,16 +11,20 @@
 
 - [x] Refreshing the UI when user downloads/deletes POIs to show changes
 
-- [ ] Notifications when user gets close to the POI
+- [x] Notifications when user gets close to the POI
+
+- [x] Permissions in a separate file for better clarity of the MainActivity
 
 - [ ] 3D AR view
+    - [ ] Obtain orientation matrix
+    - [ ] CameraX view & OpenGL in a fragment 
     - [ ] POIs change colors based on their type
 
 ### Bugs to Fix
 
-## Additional Features to Implement
+- [x] "GPS permission denied" message even when the permission is given
 
-- [ ] Using sensors make the compass in the map fragment work
+## Additional Features to Implement
 
 - [ ] Add icons to RecyclerView
     - [ ] Icons change based on feature type
