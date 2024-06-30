@@ -4,7 +4,7 @@ import android.opengl.GLES20
 import java.nio.Buffer
 import android.util.Log
 
-class GPUInterface(vertexShaderCode: String, fragmentShaderCode: String) {
+class ARgpuInterface(vertexShaderCode: String, fragmentShaderCode: String) {
 
     private var vertexShader = -1
     private var fragmentShader = -1

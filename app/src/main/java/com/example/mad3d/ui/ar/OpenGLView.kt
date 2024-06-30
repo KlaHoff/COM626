@@ -20,7 +20,7 @@ class OpenGLView @JvmOverloads constructor(
     var onTextureAvailableCallback: (SurfaceTexture) -> Unit = {}
 ) : GLSurfaceView(ctx, attrs), GLSurfaceView.Renderer {
 
-    private var textureInterface: GPUInterface? = null
+    private var textureInterface: ARgpuInterface? = null
     private var vbuf: FloatBuffer? = null
     private var cameraFeedSurfaceTexture: SurfaceTexture? = null
     private var ibuf: ShortBuffer? = null
@@ -72,7 +72,7 @@ class OpenGLView @JvmOverloads constructor(
                         "{\n" +
                         "gl_FragColor = texture2D(uTexture,vTextureValue);\n" +
                         "}\n"
-            textureInterface = GPUInterface(texVertexShader, texFragmentShader)
+            textureInterface = ARgpuInterface(texVertexShader, texFragmentShader)
             setupTexture(textureId[0])
             textureInterface?.setUniform1i("uTexture", 0)
             Log.d("CAMERAXGL", "setting up texture available callback")
