@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -193,6 +194,27 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
                     break
                 }
             }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // hiding the action and menu bars when it's in landscape mode
+            binding.bottomNav.visibility = View.GONE
+            binding.fab.visibility = View.GONE
+            supportActionBar?.hide()
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // restoring the bars when back to portrait
+            binding.bottomNav.visibility = View.VISIBLE
+            binding.fab.visibility = View.VISIBLE
+            supportActionBar?.show()
+        }
+
+        // letting the ARFragment know about the orientation change
+        val fragment = supportFragmentManager.findFragmentById(R.id.frame_content)
+        if (fragment is ARFragment) {
+            fragment.updateOrientationMessage()
         }
     }
 }

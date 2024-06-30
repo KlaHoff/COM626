@@ -4,9 +4,6 @@ import android.opengl.GLES20
 import java.nio.Buffer
 import android.util.Log
 
-// Controls the interface between CPU and GPU, i.e. all the interfacing with shaders
-// and associating buffer data with shader variables.
-
 class GPUInterface(vertexShaderCode: String, fragmentShaderCode: String) {
 
     private var vertexShader = -1
@@ -66,8 +63,6 @@ class GPUInterface(vertexShaderCode: String, fragmentShaderCode: String) {
         return if (isValid()) GLES20.glGetAttribLocation(shaderProgram, shaderVar) else -1
     }
 
-
-    // could be used e.g. for sending texture id
     fun setUniform1i(shaderVar: String, i: Int) {
         if (isValid()) {
             val refShaderVar = GLES20.glGetUniformLocation(shaderProgram, shaderVar)

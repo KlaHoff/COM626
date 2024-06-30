@@ -3,6 +3,7 @@ package com.example.mad3d.ui.ar
 import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.SurfaceTexture
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -23,6 +25,7 @@ class ARFragment : Fragment() {
     private var surfaceTexture: SurfaceTexture? = null
     private lateinit var openglview: OpenGLView
     private lateinit var orientationManager: OrientationManager
+    private lateinit var orientationMessage: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,6 +34,7 @@ class ARFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_ar, container, false)
         openglview = view.findViewById(R.id.opengl_view)
+        orientationMessage = view.findViewById(R.id.orientation_message)
         orientationManager = OrientationManager(requireContext())
         openglview.onTextureAvailableCallback = {
             Log.d("MAD3D", "Starting camera")
@@ -45,6 +49,7 @@ class ARFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         orientationManager.startListening()
+        updateOrientationMessage()
     }
 
     override fun onPause() {
@@ -115,5 +120,14 @@ class ARFragment : Fragment() {
         val sensorMatrix = orientationManager.getRotationMatrix()
         val remappedSensorMatrix = GLMatrix(sensorMatrix)
         openglview.orientationMatrix = remappedSensorMatrix
+    }
+
+    fun updateOrientationMessage() {
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            orientationMessage.visibility = View.VISIBLE
+        } else {
+            orientationMessage.visibility = View.GONE
+        }
     }
 }

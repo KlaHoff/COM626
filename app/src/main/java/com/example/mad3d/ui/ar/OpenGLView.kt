@@ -90,7 +90,6 @@ class OpenGLView @JvmOverloads constructor(
         }
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
 
-        // Apply the corrected orientation matrix as the view matrix
         val viewMatrix = orientationMatrix.clone()
         viewMatrix.correctSensorMatrix()
     }
