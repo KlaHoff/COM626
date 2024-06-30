@@ -11,17 +11,31 @@ object PermissionsUtils {
 
     private const val REQUEST_CODE_LOCATION = 0
     private const val REQUEST_CODE_NOTIFICATIONS = 1
+    private const val REQUEST_CODE_CAMERA = 2
 
     fun requestPermissions(activity: MainActivity) {
+        val permissionsToRequest = mutableListOf<String>()
         if (ContextCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+            permissionsToRequest.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+
+        if (ContextCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionsToRequest.add(Manifest.permission.CAMERA)
+        }
+
+        if (permissionsToRequest.isNotEmpty()) {
             ActivityCompat.requestPermissions(
                 activity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_CODE_LOCATION
+                permissionsToRequest.toTypedArray(),
+                REQUEST_CODE_CAMERA
             )
         } else {
             requestNotificationPermission(activity)
@@ -31,11 +45,11 @@ object PermissionsUtils {
 
     fun onRequestPermissionsResult(activity: MainActivity, requestCode: Int, grantResults: IntArray) {
         when (requestCode) {
-            REQUEST_CODE_LOCATION -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            REQUEST_CODE_LOCATION, REQUEST_CODE_CAMERA -> {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                     requestNotificationPermission(activity)
                 } else {
-                    ToastUtils.showToast(activity, "GPS permission denied")
+                    ToastUtils.showToast(activity, "Necessary permissions denied")
                 }
             }
             REQUEST_CODE_NOTIFICATIONS -> {

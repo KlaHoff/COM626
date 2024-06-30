@@ -61,6 +61,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.2")
     implementation("androidx.core:core:1.7.0")
     implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation( files("libs/app-debug.aar"))
+    val cxver = "1.1.0"
+    implementation("androidx.camera:camera-core:$cxver")
+    implementation("androidx.camera:camera-camera2:$cxver")
+    implementation("androidx.camera:camera-lifecycle:$cxver")
+    implementation("androidx.camera:camera-view:$cxver")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
