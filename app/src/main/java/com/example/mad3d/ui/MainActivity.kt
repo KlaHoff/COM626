@@ -34,12 +34,18 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
+    // view binding for the activity
     private lateinit var binding: ActivityMainBinding
+    // database instance
     private lateinit var database: PoiDatabase
+    // data access object for POIs
     private val poiDao: PoiDao by lazy { database.getPoiDao() }
+    // view model for location data
     private lateinit var locationViewModel: LocationViewModel
-    private val proximityThreshold = 100.0 // Distance in meters
+    // distance threshold for proximity checks in meters
+    private val proximityThreshold = 100.0
 
+    // broadcast receiver to handle location updates
     private val locationUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == "com.example.androidservices.LOCATION_UPDATE") {
@@ -57,18 +63,23 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // set up navigation and floating action button
         binding.bottomNav.setOnItemSelectedListener(this)
         binding.fab.setOnClickListener { showFilterPOIDialog() }
 
+        // initialize the database
         database = PoiDatabase.getDatabase(this)
 
-        locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
+        // initialize the location view model
+        locationViewModel = ViewModelProvider(this)[LocationViewModel::class.java]
 
+        // request necessary permissions
         PermissionsUtils.requestPermissions(this)
     }
 
     override fun onResume() {
         super.onResume()
+        // register the location update receiver
         val filter = IntentFilter().apply {
             addAction("com.example.androidservices.LOCATION_UPDATE")
         }
@@ -77,9 +88,11 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
 
     override fun onPause() {
         super.onPause()
+        // unregister the location update receiver
         unregisterReceiver(locationUpdateReceiver)
     }
 
+    // handles the result of permission requests
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -89,16 +102,19 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         PermissionsUtils.onRequestPermissionsResult(this, requestCode, grantResults)
     }
 
+    // initializes the GPS service
     fun initService() {
         val intent = Intent(this, GpsService::class.java)
         startService(intent)
     }
 
+    // shows the filter dialog for selecting POI types
     private fun showFilterPOIDialog() {
         val dialogBinding = DialogFilterPoiBinding.inflate(layoutInflater)
         val dialog = BottomSheetDialog(this)
         dialog.setContentView(dialogBinding.root)
 
+        // set the current filter in the dialog
         val currentFilter = FilterPreferenceHelper.getFilter(this)
         when (currentFilter) {
             "restaurant" -> dialogBinding.radioRestaurants.isChecked = true
@@ -109,7 +125,8 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
             else -> dialogBinding.radioNoFilter.isChecked = true
         }
 
-        dialogBinding.filterRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+        // handle filter selection
+        dialogBinding.filterRadioGroup.setOnCheckedChangeListener { _, checkedId ->
             val filter = when (checkedId) {
                 R.id.radio_restaurants -> "restaurant"
                 R.id.radio_pubs -> "pub"
@@ -124,6 +141,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         dialog.show()
     }
 
+    // applies the selected filter
     private fun applyFilter(filter: String?) {
         FilterPreferenceHelper.saveFilter(this, filter)
 
@@ -131,6 +149,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
             putString("FILTER_TYPE", filter)
         }
 
+        // update the current fragment with the new filter
         supportFragmentManager.findFragmentById(R.id.frame_content)?.let { fragment ->
             fragment.arguments = bundle
             supportFragmentManager.commit {
@@ -139,11 +158,13 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         }
     }
 
+    // inflates the options menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.toolbar, menu)
         return true
     }
 
+    // handles menu item selections
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.download_POIs -> {
             downloadPOIs()
@@ -151,6 +172,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         }
 
         R.id.delete_POIs -> {
+            // delete all POIs in a background thread
             Thread {
                 poiDao.deleteAllPois()
             }.start()
@@ -164,16 +186,18 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         }
     }
 
+    // downloads POIs based on the current location
     private fun downloadPOIs() {
         locationViewModel.latLon.value?.let { location ->
             val bbox =
                 "${location.lon - 0.01},${location.lat - 0.01},${location.lon + 0.01},${location.lat + 0.01}"
             val poiRepository = POIRepository(this)
             showLoading(true)
+            // fetch and store POIs in the background
             poiRepository.fetchAndStorePOIs(bbox) {
                 runOnUiThread {
                     showLoading(false)
-                    reloadCurrentFragment()  // Reload current fragment
+                    reloadCurrentFragment()  // reload current fragment to show new POIs
                     ToastUtils.showToast(this, "POIs downloaded")
                 }
             }
@@ -183,10 +207,12 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         }
     }
 
+    // shows or hides the loading indicator
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
+    // handles click on the map navigation bar icon
     private fun onMapClicked(): Boolean {
         supportFragmentManager.commit {
             replace(R.id.frame_content, MapFragment())
@@ -194,6 +220,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         return true
     }
 
+    // handles click on the explore navigation bar icon
     private fun onExploreClicked(): Boolean {
         supportFragmentManager.commit {
             replace(R.id.frame_content, ExploreFragment())
@@ -201,6 +228,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         return true
     }
 
+    // handles click on the AR navigation bar icon
     private fun onARClicked(): Boolean {
         supportFragmentManager.commit {
             replace(R.id.frame_content, ARFragment())
@@ -208,6 +236,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         return true
     }
 
+    // handles navigation bar selections
     override fun onNavigationItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.nav_explore -> onExploreClicked()
         R.id.nav_map -> onMapClicked()
@@ -215,6 +244,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         else -> false
     }
 
+    // reloads the current fragment --> to refresh UI for example after downloading POIs
     private fun reloadCurrentFragment() {
         supportFragmentManager.findFragmentById(R.id.frame_content)?.let { fragment ->
             supportFragmentManager.commit {
@@ -223,6 +253,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         }
     }
 
+    // checks the proximity of the user to each POI
     private fun checkProximityToPois(latitude: Double, longitude: Double) {
         CoroutineScope(Dispatchers.IO).launch {
             val pois = poiDao.getAllPois()
@@ -236,21 +267,22 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         }
     }
 
+    // handles configuration changes (screen orientation changes)
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // hiding the action and menu bars when it's in landscape mode
+            // hide navigation and action bars in landscape mode
             binding.bottomNav.visibility = View.GONE
             binding.fab.visibility = View.GONE
             supportActionBar?.hide()
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // restoring the bars when back to portrait
+            // show navigation and action bars in portrait mode
             binding.bottomNav.visibility = View.VISIBLE
             binding.fab.visibility = View.VISIBLE
             supportActionBar?.show()
         }
 
-        // letting the ARFragment know about the orientation change
+        // notify ARFragment of the orientation change
         val fragment = supportFragmentManager.findFragmentById(R.id.frame_content)
         if (fragment is ARFragment) {
             fragment.updateOrientationMessage()
