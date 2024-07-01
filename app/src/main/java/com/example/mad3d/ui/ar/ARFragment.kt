@@ -2,7 +2,6 @@ package com.example.mad3d.ui.ar
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.SurfaceTexture
 import android.os.Bundle
@@ -17,11 +16,10 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.mad3d.R
-import freemap.openglwrapper.GLMatrix
+import com.example.mad3d.utils.PermissionsUtils
 
 class ARFragment : Fragment() {
 
-    private var permissions = arrayOf(Manifest.permission.CAMERA)
     private var surfaceTexture: SurfaceTexture? = null
     private lateinit var openglview: OpenGLView
     private lateinit var orientationManager: OrientationManager
@@ -40,7 +38,7 @@ class ARFragment : Fragment() {
             Log.d("MAD3D", "Starting camera")
             surfaceTexture = it
             if (!startCamera()) {
-                requestPermissions(permissions, 0)
+                PermissionsUtils.requestPermissions(this, arrayOf(Manifest.permission.CAMERA))
             }
         }
         return view
@@ -57,29 +55,26 @@ class ARFragment : Fragment() {
         orientationManager.stopListening()
     }
 
-    private fun checkPermissions(): Boolean {
-        return permissions.all {
-            ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
-        }
-    }
-
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 0 && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-            startCamera()
-        } else {
-            AlertDialog.Builder(requireContext()).setPositiveButton("OK", null)
-                .setMessage("Will not work as camera permission not granted").show()
+        PermissionsUtils.onRequestPermissionsResult(grantResults) { granted ->
+            if (granted) {
+                startCamera()
+            } else {
+                AlertDialog.Builder(requireContext()).setPositiveButton("OK", null)
+                    .setMessage("Will not work as camera permission not granted").show()
+            }
         }
     }
 
     private fun startCamera(): Boolean {
         Log.d("MAD3D", "startCamera()")
-        if (checkPermissions()) {
+        if (PermissionsUtils.checkPermissions(requireContext(), arrayOf(Manifest.permission.CAMERA))) {
             Log.d("MAD3D", "startCamera() ready to go")
             val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
             cameraProviderFuture.addListener({
@@ -114,12 +109,6 @@ class ARFragment : Fragment() {
         } else {
             return false
         }
-    }
-
-    private fun updateOrientationMatrix() {
-        val sensorMatrix = orientationManager.getRotationMatrix()
-        val remappedSensorMatrix = GLMatrix(sensorMatrix)
-        openglview.orientationMatrix = remappedSensorMatrix
     }
 
     fun updateOrientationMessage() {

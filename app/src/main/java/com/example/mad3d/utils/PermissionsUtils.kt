@@ -1,10 +1,12 @@
 package com.example.mad3d.utils
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.example.mad3d.ui.MainActivity
 
 object PermissionsUtils {
@@ -40,6 +42,27 @@ object PermissionsUtils {
         } else {
             requestNotificationPermission(activity)
             activity.initService()
+        }
+    }
+
+    fun requestPermissions(fragment: Fragment, permissions: Array<String>) {
+        fragment.requestPermissions(permissions, REQUEST_CODE_CAMERA)
+    }
+
+    fun checkPermissions(context: Context, permissions: Array<String>): Boolean {
+        return permissions.all {
+            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    fun onRequestPermissionsResult(
+        grantResults: IntArray,
+        onPermissionsResult: (Boolean) -> Unit
+    ) {
+        if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+            onPermissionsResult(true)
+        } else {
+            onPermissionsResult(false)
         }
     }
 
