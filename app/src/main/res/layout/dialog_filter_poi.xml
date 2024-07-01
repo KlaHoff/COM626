@@ -2,20 +2,55 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
+    android:paddingTop="10dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingBottom="20dp"
     android:orientation="vertical">
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+    <RadioGroup
+        android:id="@+id/filter_radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="This will do something">
+        android:orientation="vertical"
+        android:layout_marginTop="10dp">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        <RadioButton
+            android:id="@+id/radio_no_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_filter"
+            android:checked="true" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <RadioButton
+            android:id="@+id/radio_restaurants"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/restaurants" />
+
+        <RadioButton
+            android:id="@+id/radio_pubs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pubs" />
+
+        <RadioButton
+            android:id="@+id/radio_cafes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cafes" />
+
+        <RadioButton
+            android:id="@+id/radio_suburbs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/suburbs" />
+
+        <RadioButton
+            android:id="@+id/radio_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/other" />
+
+    </RadioGroup>
 
 </LinearLayout>

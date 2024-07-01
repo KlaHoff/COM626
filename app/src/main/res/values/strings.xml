@@ -12,4 +12,10 @@
     <string name="stopGps">stop Gps</string>
     <string name="channel_name">POI Notifications</string>
     <string name="channel_description">Notifications for Points of Interest (POIs) near you.</string>
+    <string name="suburbs">Suburbs</string>
+    <string name="other">Other</string>
+    <string name="cafes">Cafes</string>
+    <string name="pubs">Pubs</string>
+    <string name="restaurants">Restaurants</string>
+    <string name="no_filter">No Filter</string>
 </resources>
