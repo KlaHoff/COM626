@@ -22,6 +22,7 @@ import com.example.mad3d.databinding.DialogFilterPoiBinding
 import com.example.mad3d.ui.ar.ARFragment
 import com.example.mad3d.ui.explore.ExploreFragment
 import com.example.mad3d.ui.map.MapFragment
+import com.example.mad3d.utils.FilterPreferenceHelper
 import com.example.mad3d.utils.NotificationUtils
 import com.example.mad3d.utils.PermissionsUtils
 import com.example.mad3d.utils.ToastUtils
@@ -97,7 +98,43 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
         val dialogBinding = DialogFilterPoiBinding.inflate(layoutInflater)
         val dialog = BottomSheetDialog(this)
         dialog.setContentView(dialogBinding.root)
+
+        val currentFilter = FilterPreferenceHelper.getFilter(this)
+        when (currentFilter) {
+            "restaurant" -> dialogBinding.radioRestaurants.isChecked = true
+            "pub" -> dialogBinding.radioPubs.isChecked = true
+            "cafe" -> dialogBinding.radioCafes.isChecked = true
+            "suburb" -> dialogBinding.radioSuburbs.isChecked = true
+            else -> dialogBinding.radioNoFilter.isChecked = true
+        }
+
+        dialogBinding.filterRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+            val filter = when (checkedId) {
+                R.id.radio_restaurants -> "restaurant"
+                R.id.radio_pubs -> "pub"
+                R.id.radio_cafes -> "cafe"
+                R.id.radio_suburbs -> "suburb"
+                else -> null
+            }
+            applyFilter(filter)
+            dialog.dismiss()
+        }
         dialog.show()
+    }
+
+    private fun applyFilter(filter: String?) {
+        FilterPreferenceHelper.saveFilter(this, filter)
+
+        val bundle = Bundle().apply {
+            putString("FILTER_TYPE", filter)
+        }
+
+        supportFragmentManager.findFragmentById(R.id.frame_content)?.let { fragment ->
+            fragment.arguments = bundle
+            supportFragmentManager.commit {
+                replace(R.id.frame_content, fragment::class.java, fragment.arguments)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

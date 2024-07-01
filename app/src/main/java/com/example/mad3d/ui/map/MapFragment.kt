@@ -63,7 +63,9 @@ class MapFragment : Fragment() {
         }
 
         poiDatabase = PoiDatabase.getDatabase(requireContext())
-        fetchAndDisplayPois()
+
+        val filter = arguments?.getString("FILTER_TYPE")
+        fetchAndDisplayPois(filter)
 
         return view
     }
@@ -108,9 +110,13 @@ class MapFragment : Fragment() {
         myLocationOverlay.enableFollowLocation()
     }
 
-    private fun fetchAndDisplayPois() {
+    private fun fetchAndDisplayPois(filter: String? = null) {
         CoroutineScope(Dispatchers.IO).launch {
-            val poiList = poiDatabase.getPoiDao().getAllPois()
+            val poiList = if (filter.isNullOrEmpty()) {
+                poiDatabase.getPoiDao().getAllPois()
+            } else {
+                poiDatabase.getPoiDao().getPoisByType(filter)
+            }
             CoroutineScope(Dispatchers.Main).launch {
                 addMarkersToMap(poiList)
             }
@@ -118,6 +124,8 @@ class MapFragment : Fragment() {
     }
 
     private fun addMarkersToMap(poiList: List<Poi>) {
+        mapView.overlays.clear()
+        mapView.overlays.add(myLocationOverlay)
         for (poi in poiList) {
             val marker = Marker(mapView)
             marker.position = GeoPoint(poi.lat, poi.lon)

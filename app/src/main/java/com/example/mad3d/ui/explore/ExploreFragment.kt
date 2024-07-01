@@ -42,8 +42,13 @@ class ExploreFragment : Fragment() {
             adapter.notifyDataSetChanged() // Notify adapter to refresh the view
         })
 
+        val filter = arguments?.getString("FILTER_TYPE")
         thread {
-            val pois = poiDao.getAllPois()
+            val pois = if (filter.isNullOrEmpty()) {
+                poiDao.getAllPois()
+            } else {
+                poiDao.getPoisByType(filter)
+            }
             requireActivity().runOnUiThread {
                 adapter.updateData(pois)
             }

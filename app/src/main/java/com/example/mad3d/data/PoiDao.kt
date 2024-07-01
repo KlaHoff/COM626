@@ -26,4 +26,7 @@ interface PoiDao {
 
     @Query("SELECT * FROM poi WHERE osmId = :osmId")
     suspend fun getPoiByOsmId(osmId: Long): Poi?
+
+    @Query("SELECT * FROM poi WHERE featureType = :type")
+    fun getPoisByType(type: String): List<Poi>
 }

@@ -45,12 +45,6 @@
             android:layout_height="wrap_content"
             android:text="@string/suburbs" />
 
-        <RadioButton
-            android:id="@+id/radio_other"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/other" />
-
     </RadioGroup>
 
 </LinearLayout>
