@@ -105,6 +105,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
             "pub" -> dialogBinding.radioPubs.isChecked = true
             "cafe" -> dialogBinding.radioCafes.isChecked = true
             "suburb" -> dialogBinding.radioSuburbs.isChecked = true
+            "other" -> dialogBinding.radioOther.isChecked = true
             else -> dialogBinding.radioNoFilter.isChecked = true
         }
 
@@ -114,6 +115,7 @@ class MainActivity : AppCompatActivity(), OnItemSelectedListener {
                 R.id.radio_pubs -> "pub"
                 R.id.radio_cafes -> "cafe"
                 R.id.radio_suburbs -> "suburb"
+                R.id.radio_other -> "other"
                 else -> null
             }
             applyFilter(filter)

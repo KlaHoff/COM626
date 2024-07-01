@@ -29,4 +29,7 @@ interface PoiDao {
 
     @Query("SELECT * FROM poi WHERE featureType = :type")
     fun getPoisByType(type: String): List<Poi>
+
+    @Query("SELECT * FROM poi WHERE featureType NOT IN (:types)")
+    fun getPoisExcludingTypes(types: List<String>): List<Poi>
 }

@@ -44,10 +44,10 @@ class ExploreFragment : Fragment() {
 
         val filter = arguments?.getString("FILTER_TYPE")
         thread {
-            val pois = if (filter.isNullOrEmpty()) {
-                poiDao.getAllPois()
-            } else {
-                poiDao.getPoisByType(filter)
+            val pois = when {
+                filter.isNullOrEmpty() -> poiDao.getAllPois()
+                filter == "other" -> poiDao.getPoisExcludingTypes(listOf("restaurant", "pub", "cafe", "suburb"))
+                else -> poiDao.getPoisByType(filter)
             }
             requireActivity().runOnUiThread {
                 adapter.updateData(pois)

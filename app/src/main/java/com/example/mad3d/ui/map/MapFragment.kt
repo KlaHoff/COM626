@@ -112,10 +112,10 @@ class MapFragment : Fragment() {
 
     private fun fetchAndDisplayPois(filter: String? = null) {
         CoroutineScope(Dispatchers.IO).launch {
-            val poiList = if (filter.isNullOrEmpty()) {
-                poiDatabase.getPoiDao().getAllPois()
-            } else {
-                poiDatabase.getPoiDao().getPoisByType(filter)
+            val poiList = when {
+                filter.isNullOrEmpty() -> poiDatabase.getPoiDao().getAllPois()
+                filter == "other" -> poiDatabase.getPoiDao().getPoisExcludingTypes(listOf("restaurant", "pub", "cafe", "suburb"))
+                else -> poiDatabase.getPoiDao().getPoisByType(filter)
             }
             CoroutineScope(Dispatchers.Main).launch {
                 addMarkersToMap(poiList)
